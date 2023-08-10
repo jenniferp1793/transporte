@@ -1,80 +1,82 @@
 import Cliente from "../models/clientes.js";
 
-const httpClientes = {
-    getclientes: async (req, res) => {
+const httpCliente = {
+
+    getCliente: async (req, res) => {
         try {
-            const clientes = await Cliente.find()
-            res.json({ clientes })      
-        } catch (error) {
-            res.status(400).json({error})
-        }
-    },
-    getClientesCedula: async (req, res) => {
-        const {cedula}=req.params
-        try {
-            const clientes = await Cliente.find({cc:cedula})
-            res.json({ clientes })
-        } catch (error) {
-            res.status(400).json({error})
-        }
-    },
-    getClientesId: async(req,res)=>{
-        try {
-            const { id } = req.params
-            //const persona= await Persona.find({_id:id})
-            const cliente = await Cliente.findById(id)
+            const cliente = await Cliente.find()
             res.json({ cliente })
+
         } catch (error) {
-            res.status(400).json({error})
-        }      
+            res.status(400).json({ error })
+        }
+
     },
-    postClientes: async (req, res) => {
+    getClienteId: async (req, res) => {
+        const { id } = req.params
         try {
-            const { nombre, cedula, edad, telefono } = req.body
-            const cliente = new Cliente({ nombre, cedula, edad, telefono })
+            const cliente = await Cliente.findById({id})
+            res.json({ cliente })
+
+        } catch (error) {
+            res.status(400).json({ error })
+        }
+    },
+
+    postCliente: async (req, res) => {
+        try {
+            const { cedula, nombre, telefono } = req.body
+            const cliente = new Cliente({ cedula, nombre, telefono })
             await cliente.save()
 
             res.json({ cliente })
         } catch (error) {
             res.status(400).json({ error })
         }
+
+
     },
-    
-    putclientes: async (req,res) => {
-        const {id}=req.params
-        const {nombre,telefononuevo}=req.body
-        const cliente=await
-            cliente.findByIdAndUpdate(id,{nombre,telefono:telefononuevo},{new:true});
-    },
-    deleteClientes: async()=>{
-        const {cedula}=req.params
-        const cliente= await Cliente.findOneAndDelete({cc:cedula})
-        //const persona= await Persona.deleteMany({condiciones})
-        res.json({cliente})
-    },
-    deleteClienteById: async ()=>{
+    putCliente: async (req, res) => {
         try {
-            const {id}=req.params
-            const cliente=await Cliente.findByIdAndDelete(id)
-        } catch (error) {    
+            const { id } = req.params
+            const { nombre, telefono } = req.body
+            const cliente = await
+                Cliente.findByIdAndUpdate(id, { nombre, telefono }, { new: true });
+            res.json({cliente})
+        } catch (error) {
+            res.status(400).json({error})
+        }
+
+    },
+    deleteCliente: async (req,res) => {
+        try {
+            const { id } = req.params
+            const cliente = await Cliente.findByIdAndDelete(id)
+            res.json(cliente + `Cliente eliminado`)
+        } catch (error) {
+            res.status(400).json({error})
         }
     },
-
-    putClienteInactivar: async ()=>{
+    putClienteInactivar: async (req,res)=>{
         try {
             const {id}=req.params
             const cliente=await Cliente.findByIdAndUpdate(id,{estado:0},{new:true})
             res.json({cliente})
-        } catch (error) {  
+        } catch (error) {
+            res.status(400).json({error})
+            
         }
     },
-    putClienteActivar: async ()=>{
+    putClienteActivar: async (req,res)=>{
         try {
             const {id}=req.params
-            const cliente=await Cliente.findByIdAndUpdate(id,{estado:1})
+            const cliente=await Cliente.findByIdAndUpdate(id,{estado:1},{new:true})
+            res.json({cliente})
         } catch (error) {
+            res.status(400).json({error})
         }
     }
+
 }
 
-export default httpClientes
+export default httpCliente

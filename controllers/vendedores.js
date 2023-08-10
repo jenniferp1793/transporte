@@ -1,80 +1,126 @@
-import vendedores from "../models/vendedores.js";
-import vendedores from "../models/vendedores.js";
-import vendedores from "../models/vendedores.js";
+import Vendedor from "../models/vendedores.js";
+import bcryptjs from "bcryptjs"
+import  {generarJWT} from "../middlewares/validar-jwt.js";
 
-const httpVendedores = {
-    getvendedores: async (req, res) => {
+const httpVendedor = {
+    getVendedor: async (req, res) => {
         try {
-            const vendedores = await Vendedor.find()
-            res.json({ vendedores })      
+            const vendedor = await Vendedor.find()
+            res.json({ vendedor })
+            
+        } catch (error) {
+            res.status(400).json({error})
+        }
+
+    },
+
+    getVendedorId: async (req, res) => {
+        const {id}=req.params
+        try {
+            const vendedor = await Vendedor.findById(id)
+            res.json({ vendedor })
+            
         } catch (error) {
             res.status(400).json({error})
         }
     },
-    getVendedoresCedula: async (req, res) => {
-        const {cedula}=req.params
-        try {
-            const vendedores = await vendedores.find({cc:cedula})
-            res.json({ vendedores })
-        } catch (error) {
-            res.status(400).json({error})
-        }
-    },
-    getVendedoresId: async(req,res)=>{
-        try {
-            const { id } = req.params
-            const vendedores = await Vendedor.findById(id)
-            res.json({ vendedores })
-        } catch (error) {
-            res.status(400).json({error})
-        }      
-    },
-    postVendedores: async (req, res) => {
-        try {
-            const { nombre, cedula, edad, telefono } = req.body
-            const vendedores = new ({ nombre, cedula, edad, telefono })
-            await vendedores.save()
 
-            res.json({ vendedores })
+    postVendedor: async (req, res) => {
+        try {
+            const { cedula, nombre, cuenta, clave, telefono} = req.body
+            const vendedor = new Vendedor({ cedula, nombre, cuenta, clave, telefono})
+            const salt = bcryptjs.genSaltSync();
+            vendedor.clave = bcryptjs.hashSync(clave, salt)
+
+            await vendedor.save()
+
+            res.json({ vendedor })
         } catch (error) {
             res.status(400).json({ error })
         }
     },
-    
-    putvendedores: async (req,res) => {
-        const {id}=req.params
-        const {nombre,telefononuevo}=req.body
-        const Vendedor=await
-            Vendedor.findByIdAndUpdate(id,{nombre,telefono:telefononuevo},{new:true});
-    },
-    deleteVendedores: async()=>{
-        const {cedula}=req.params
-        const Vendedor= await Vendedor.findOneAndDelete({cc:cedula})
-        res.json({Vendedor})
-    },
-    deleteVendedoresById: async ()=>{
+
+    putVendedor: async (req,res) => {
         try {
             const {id}=req.params
-            const vendedor=await Vendedor.findByIdAndDelete(id)
-        } catch (error) {    
+            const {nombre,cuenta, clave, telefono}=req.body
+            const vendedor=await 
+                Vendedor.findByIdAndUpdate(id,{nombre,cuenta, clave, telefono},{new:true});
+                const salt = bcryptjs.genSaltSync();
+                vendedor.clave = bcryptjs.hashSync(clave, salt)
+                await vendedor.save()
+                    res.json({vendedor})
+            
+        } catch (error) {
+            res.status(400).json({error})
+        }
+    },
+    login: async (req, res) => {
+        const { cuenta, clave } = req.body;
+
+        try {
+            const vendedor = await Vendedor.findOne({ cuenta })
+            if (!vendedor) {
+                return res.status(400).json({
+                    msg: "Vendedor / clave no son correctos"
+                })
+            }
+
+            if (vendedor.estado === 0) {
+                return res.status(400).json({
+                    msg: "Vendedor Inactivo"
+                })
+            }
+
+            const validPassword = bcryptjs.compareSync(clave, vendedor.clave);
+            if (!validPassword) {
+                return res.status(401).json({
+                    msg: "Vendedor / Password no son correctos"
+                })
+            }
+
+            const token = await generarJWT(vendedor.id);
+
+            res.json({
+                vendedor,
+                token
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: "Hable con el WebMaster"
+            })
         }
     },
 
-    putVendedorInactivar: async ()=>{
+    deleteVendedor: async(req,res)=>{
+        try {
+            const {id}=req.params
+            const vendedor= await Vendedor.findByIdAndRemove(id)
+            res.json({vendedor})
+        } catch (error) {
+            res.status(400).json({error})
+        }
+    },
+    putVendedorInactivar: async (req,res)=>{
         try {
             const {id}=req.params
             const vendedor=await Vendedor.findByIdAndUpdate(id,{estado:0},{new:true})
             res.json({vendedor})
-        } catch (error) {  
+        } catch (error) {
+            res.status(400).json({error})
+            
         }
     },
-    putVendedorActivar: async ()=>{
+    putVendedorActivar: async (req,res)=>{
         try {
             const {id}=req.params
-            const vendedor=await Vendedor.findByIdAndUpdate(id,{estado:1})
+            const vendedor=await Vendedor.findByIdAndUpdate(id,{estado:1},{new:true})
+            res.json({vendedor})
         } catch (error) {
+            res.status(400).json({error})
         }
     }
-}
+};
 
-export default vendedores
+export default httpVendedor;
