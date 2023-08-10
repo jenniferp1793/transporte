@@ -1,95 +1,70 @@
-/* import bd from "../basedatos.js"; */
-import tickets from "../models/ticket.js";
+import Ticket from "../models/ticket.js";
 
-const httpTicket = {
-    gettickets: async (req, res) => {
+const httpTicket ={
+    getTicket: async (req, res) => {
         try {
-            const ticket1 = await tickets.find()
-            res.json({ ticket1 })      
+            const ticket = await Ticket.find().populate("vendedor_id").populate("cliente_id")
+            .populate("ruta_id").populate("bus_id")
+            res.json({ ticket })
+
         } catch (error) {
-            res.status(400).json({error})
+            res.status(400).json({ error })
         }
+
     },
-    getticketPrecio: async (req, res) => {
-        const {precio}=req.params
+    getTicketId: async (req, res) => {
+        const { id } = req.params
         try {
-            const tickets = await tickets.find({precio:precio})
-            res.json({ tickets })
+            const ticket = await Ticket.findById({id})
+            res.json({ ticket })
+
         } catch (error) {
-            res.status(400).json({error})
+            res.status(400).json({ error })
         }
-    },
-    getTicketsId: async(req,res)=>{
-        try {
-            const { id } = req.params
-            //const persona= await Persona.find({_id:id})
-            const tickets = await tickets.findById(id)
-            res.json({ tickets })
-        } catch (error) {
-            res.status(400).json({error})
-        }      
     },
 
-    postTickets:async (req, res) =>{
+    postTicket: async (req, res) => {
         try {
-        const { cliente, ruta,fecha,vendedor,precio } = req.body;
-        const ticket3 = new tickets({ cliente, ruta,fecha,vendedor,precio });
-        await ticket3.save();
-    
-        res.json({ ticket3 });
+            const { vendedor_id, cliente_id, ruta_id, bus_id, fechahora_venta} = req.body
+            const ticket = new Ticket({ vendedor_id, cliente_id, ruta_id, bus_id, fechahora_venta })
+            await ticket.save()
+
+            res.json({ ticket })
         } catch (error) {
-        res.status(400).json({ error });
+            res.status(400).json({ error })
         }
+
+
     },
-    putTickets: async (req, res) => {
+    deleteTicket: async(req,res)=>{
         try {
-        const { id } = req.params;
-        const { ruta,fecha } = req.body;
-        const ticket3 = await tickets.findByIdAndUpdate(
-            id,
-            { ruta, fecha: fecha_salida },
-            { new: true }
-        );
-        res.json({ ticket3 });
+            const {id}=req.params
+            const ticket= await Ticket.findByIdAndRemove(id)
+            res.json({ticket})
         } catch (error) {
-        res.status(400).json({ error });
+            res.status(400).json({error})
         }
     },
     
-    deleteTickets: async (req, res) => {
-        const { precio} = req.params;
-        const ticket3 = await bus.findOneAndDelete({ precio:precio });
-        res.json({ ticket3 });
-    },
-    
-    deleteTicketsId: async (req, res) => {
+    putTicketInactivar: async (req,res)=>{
         try {
-        const { id } = req.params;
-        const ticket3 = await bus.findByIdAndDelete(id);
-        res.json({ ticket3 });
+            const {id}=req.params
+            const ticket=await Ticket.findByIdAndUpdate(id,{estado:0},{new:true})
+            res.json({ticket})
         } catch (error) {
-        res.status(400).json({ error });
+            res.status(400).json({error})
+            
         }
     },
-    
-    putTicketsInactivar: async (req, res) => {
+    putTicketActivar: async (req,res)=>{
         try {
-        const { id } = req.params;
-        const ticket3 = await tickets.findByIdAndUpdate(id, { estado: 0 }, { new: true });
-        res.json({ ticket3 });
+            const {id}=req.params
+            const ticket=await Ticket.findByIdAndUpdate(id,{estado:1},{new:true})
+            res.json({ticket})
         } catch (error) {
-        res.status(400).json({ error });
+            res.status(400).json({error})
         }
-    },
+    }
     
-    putTicketsActivar: async (req, res) => {
-        try {
-        const { id } = req.params;
-        const ticket3 = await tickets.findByIdAndUpdate(id, { estado: 1 });
-        res.json({ ticket3 });
-        } catch (error) {
-        res.status(400).json({ error });
-        }
-    },
-    };
-export default httpTicket;
+}
+export default httpTicket

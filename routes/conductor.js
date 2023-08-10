@@ -1,70 +1,53 @@
-import Ticket from "../models/ticket.js";
+import { Router } from "express"
+import httpConductor from "../controllers/conductor.js";
+import { check } from "express-validator";
+import validarCampos from "../middlewares/validar.js"
+import helpersConductor from "../helpers/hp_conductor.js";
 
-const httpTicket ={
-    getTicket: async (req, res) => {
-        try {
-            const ticket = await Ticket.find().populate("vendedor_id").populate("cliente_id")
-            .populate("ruta_id").populate("bus_id")
-            res.json({ ticket })
+const router = new Router()
 
-        } catch (error) {
-            res.status(400).json({ error })
-        }
+router.get('/conductor', httpConductor.getConductor);
 
-    },
-    getTicketId: async (req, res) => {
-        const { id } = req.params
-        try {
-            const ticket = await Ticket.findById({id})
-            res.json({ ticket })
+router.get('/conductor/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpConductor.getConductorId);
 
-        } catch (error) {
-            res.status(400).json({ error })
-        }
-    },
+router.post('/agregar',[
+    check("cedula", "Digite su cedula").not().isEmpty(),
+    check("nombre", "Digite su nombre").not().isEmpty(),
+    check("id_bus", "Digite el id del bus").not().isEmpty(),
+    check("id_bus", "Digite el id del bus").isMongoId(),
+    check("experiencia", "Digite sus años de experiencia").not().isEmpty(),
+    check("telefono", "Digite su telefono").not().isEmpty(),
+    validarCampos
+],httpConductor.postConductor);
 
-    postTicket: async (req, res) => {
-        try {
-            const { vendedor_id, cliente_id, ruta_id, bus_id, fechahora_venta} = req.body
-            const ticket = new Ticket({ vendedor_id, cliente_id, ruta_id, bus_id, fechahora_venta })
-            await ticket.save()
+router.put('/conductor/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    check("nombre", "Digite su nombre").not().isEmpty(),
+    check("id_bus", "Digite el id del bus").not().isEmpty(),
+    check("experiencia", "Digite sus años de experiencia").not().isEmpty(),
+    check("telefono", "Digite su telefono").not().isEmpty(),
+    validarCampos
+], httpConductor.putConductor);
 
-            res.json({ ticket })
-        } catch (error) {
-            res.status(400).json({ error })
-        }
+router.delete('/conductor/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+], httpConductor.deleteConductor);
+router.put('inactivarConductor/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpConductor.putConductorInactivar)
+router.put('activarConductor/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpConductor.putConductorActivar)
 
-
-    },
-    deleteTicket: async(req,res)=>{
-        try {
-            const {id}=req.params
-            const ticket= await Ticket.findByIdAndRemove(id)
-            res.json({ticket})
-        } catch (error) {
-            res.status(400).json({error})
-        }
-    },
-    
-    putTicketInactivar: async (req,res)=>{
-        try {
-            const {id}=req.params
-            const ticket=await Ticket.findByIdAndUpdate(id,{estado:0},{new:true})
-            res.json({ticket})
-        } catch (error) {
-            res.status(400).json({error})
-            
-        }
-    },
-    putTicketActivar: async (req,res)=>{
-        try {
-            const {id}=req.params
-            const ticket=await Ticket.findByIdAndUpdate(id,{estado:1},{new:true})
-            res.json({ticket})
-        } catch (error) {
-            res.status(400).json({error})
-        }
-    }
-    
-}
-export default httpTicket
+export default router

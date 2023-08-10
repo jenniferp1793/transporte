@@ -1,31 +1,50 @@
 import { Router } from "express"
 import httpBus from "../controllers/bus.js"
 import { check } from "express-validator"
+import validarCampos from "../middlewares/validar.js"
+import helpersBus from "../helpers/hp_bus.js"
 
-const router=new Router()
 
-router.get('/hola',[
-    check("numero_vehiculo", "El numero es obligatorio").not().isEmpty(),
-    check("numero_vehiculo", "Maximo 4 caracteres").isLength({max:4}),
-    check("placa", "La placa es obligatorio").not().isEmpty(),
-    check("placa", "Maximo 6 caracteres").isLength({max:6}),
-    check("nombrecampo").isMongoId(),
-    check("conductor", "El conductor es obligatorio").not().isEmpty(),
-    check("conductor", "Minimo 8 caracteres").isLength({min:8}),
-] ,httpBus.getbus  )
+const router = new Router()
 
-router.get('/:placa', httpBus.getBusPlaca)
+router.get('/buses' ,httpBus.getBuses)
 
-router.post('/', httpBus.postBuses  )
+router.get('/bus/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+], httpBus.getBus);
 
-router.delete('/:placa',(req,res)=>{
-    const {placa}=req.params
+router.post('/bus/agregar', [
+    check("numero_bus", "Numero del bus").not().isEmpty(),
+    check("placa", "Numero del bus").not().isEmpty(),
+    check("cantidad_asientos", "Asientos disponibles").not().isEmpty(),
+    check("empresa_asignada", "Nombre de la empresa").not().isEmpty(),
+    validarCampos
+], httpBus.postBus);
 
-    const index=bd.bus.findIndex( bus1=> bus1.placa==placa   )
-    const bus1= bd.bus.splice(index,1)
+router.put('/bus/:id', [
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    check("cantidad_asientos", "Asientos disponibles requeridos").not().isEmpty(),
+    check("empresa_asignada", "Nombre de la empresa").not().isEmpty(),
+    validarCampos
+], httpBus.putEditarBus);
 
-    if( index==-1 ) res.status(400).json({error:"Bus no existe"})
-    else res.json({bus1})
-})
+router.delete('/bus/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+], httpBus.deleteBus);
+
+router.put('inactivarBus/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpBus.putBusInactivar)
+router.put('activarBus/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpBus.putBusActivar)
 
 export default router

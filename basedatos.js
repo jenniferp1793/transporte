@@ -5,6 +5,6 @@ const bd={
     ticket:[],
     vendedores:[]
 }
-const hora=()=>{}
+/* const hora=()=>{} */
 
 export default bd

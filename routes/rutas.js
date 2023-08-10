@@ -1,23 +1,49 @@
 import { Router } from "express";
-import httpRutas from "../controllers/ruta.js";
+import httpRuta from "../controllers/ruta.js";
 import { check } from "express-validator"
 
 const router = new Router();
 
-router.get('/hola', httpRutas.getrutas);
+router.get('/hola', httpRuta.getrutas);
 
-router.get('/:destino', httpRutas.getRutasDestino);
+router.get('/ruta/:id',[
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos
+],httpRuta.getRutaId);
 
-router.post('/', httpRutas.postRutas);
+router.post('/agregar',[
+  check("precio","Digite su precio").not().isEmpty(),
+  check("origen","Digite su origen").not().isEmpty(),
+  check("destino","Digite su destino").not().isEmpty(),
+  validarCampos
+],httpRuta.postRutas);
 
-router.delete('/:destino', (req, res) => {
-  const { destino } = req.params;
+router.put('/ruta/:id', [
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  check("id","Digite su id").not().isEmpty(),
+  check("precio","Digite su precio").not().isEmpty(),
+  check("origen","Digite su origen").not().isEmpty(),
+  check("destino","Digite su destino").not().isEmpty(),
+  validarCampos
+],httpRuta.putRutas);
 
-  const index = bd.bus.findIndex(ruta1 => ruta1.destino === destino);
-  const ruta1 = bd.ruta.splice(index, 1);
+router.delete('/ruta/:id',[
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos
+],httpRuta.getRutaId);
 
-  if (index === -1) res.status(400).json({ error: "Bus no existe" });
-  else res.json({ ruta1 });
-});
+router.put('inactivarRuta/:id',[],httpRuta.putRutaInactivar)
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos
+router.put('activarRuta/:id',[
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos
+],httpRuta.putRutaActivar)
+
 
 export default router;
