@@ -1,5 +1,6 @@
 import { Router } from "express";
 import httpRutas from "../controllers/ruta.js";
+import { check } from "express-validator"
 
 const router = new Router();
 

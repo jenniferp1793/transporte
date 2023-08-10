@@ -4,17 +4,38 @@ import { check } from "express-validator"
 
 const router=new Router()
 
-router.get('/ticket', httpTicket, getticket[
-  check('fecha_venta', "La fecha de venta es obligatorio").not().isEmpty(),
-  check('hora_venta', "La hora de venta es obligatorio").not().isEmpty(),
-  check('fecha_salida', "La fecha de salida es obligatorio").not().isEmpty(),
-  check('hora_salida', "La hora de salida es obligatorio").not().isEmpty(),
-  check('precio', "El precio es obligatorio").not().isEmpty(),
-  check('cliente', "El cliente es obligatorio").not().isEmpty(),
-  check('ruta', "La ruta es obligatoria").not().isEmpty(),
-  check('bus', "El bus es obligatoria").isNumeric(),
-  check('vendedores', "El vendedor es obligatorio").not().isEmpty()
-] ,httpTicket.getticket  )
+router.get('/ticket', httpTicket.getTicket);
 
+router.get('/ticket/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpTicket.getTicketId);
+
+router.post('/agregar',[
+  check("vendedor_id", "Digite el id del vendedor").isMongoId(),
+  check("cliente_id", "Digite el id del cliente").isMongoId(),
+  check("ruta_id", "Digite el id de la ruta").isMongoId(),
+  check("bus_id", "Digite el id del bus").isMongoId(),
+  check("fechahora_venta","vacio").isISO8601().toDate(),
+  validarCampos
+],httpTicket.postTicket);
+
+router.delete('/ticket/:id',[
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos,
+], httpTicket.deleteTicket);
+
+router.put('inactivarTicket/:id',[
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos
+],httpTicket.putTicketInactivar)
+router.put('activarTicket/:id',[
+  check("id", "Digite el id").not().isEmpty(),
+  check("id", "Digite el id").isMongoId(),
+  validarCampos
+],httpTicket.putTicketActivar)
 
 export default router

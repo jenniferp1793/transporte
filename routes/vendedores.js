@@ -23,7 +23,7 @@ router.delete('/:cedula',(req,res)=>{
     const {cedula}=req.params
 
     const index=bd.vendedores.findIndex( vendedor=> vendedor.cc==cedula   )
-    const vendedor= bd.vendedoreses.splice(index,1)
+    const vendedor= bd.vendedores.splice(index,1)
 
     if( index==-1 ) res.status(400).json({error:"Vendedor no existe"})
     else res.json({vendedor})

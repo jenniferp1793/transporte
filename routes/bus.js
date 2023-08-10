@@ -16,7 +16,7 @@ router.get('/hola',[
 
 router.get('/:placa', httpBus.getBusPlaca)
 
-router.post('/', httpBus.postBus  )
+router.post('/', httpBus.postBuses  )
 
 router.delete('/:placa',(req,res)=>{
     const {placa}=req.params
