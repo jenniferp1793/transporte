@@ -15,7 +15,6 @@ const httpTicket = {
         try {
             const tickets = await tickets.find({precio:precio})
             res.json({ tickets })
-           
         } catch (error) {
             res.status(400).json({error})
         }
@@ -30,14 +29,7 @@ const httpTicket = {
             res.status(400).json({error})
         }      
     },
-/*  gettickets:async (req, res) => {
-        try {
-            const {cliente, ruta, bus, fecha, vendedor, precio} = await tickets.find()
-            res.json({ tickets })      
-        } catch (error) {
-            res.status(400).json({error})
-        }
-    }, */
+
     postTickets:async (req, res) =>{
         try {
         const { cliente, ruta,fecha,vendedor,precio } = req.body;

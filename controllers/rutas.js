@@ -17,27 +17,14 @@ const httpRutas = {
         }catch(error){
             res.status(400).json({error})
         }
-        // const ruta1 = bd.ruta.find({destino:id})
-        // if (existe == undefined) res.status(400).json({ error: "Ruta no existe" })
-        // else res.json({ ruta1 })
     },
-   /*  getRutasDestino:async (req , res)=>{
-        try{
-            const{destino}=req.params;
-            const Ruta2= await ruta.findById(destino);
-            res.json({Ruta2});
-        }catch (error){
-            res.status(400).json({error})
-        }
-    }, */
+
     postRutas:async (req, res) => {
         try{
         const { origen, destino, hora_salida,valor, numero_acientos} = req.body
 
         const ruta1 =new ruta( { origen,destino, hora_salida, valor, numero_acientos});
         await ruta1.save();
-        
-       /*  bd.ruta.push(ruta1) */
         res.json({ ruta1 });
         }catch (error){
             res.status(400).json({error});

@@ -1,4 +1,6 @@
 import vendedores from "../models/vendedores.js";
+import vendedores from "../models/vendedores.js";
+import vendedores from "../models/vendedores.js";
 
 const httpVendedores = {
     getvendedores: async (req, res) => {
@@ -12,7 +14,7 @@ const httpVendedores = {
     getVendedoresCedula: async (req, res) => {
         const {cedula}=req.params
         try {
-            const vendedores = await Vendedor.find({cc:cedula})
+            const vendedores = await vendedores.find({cc:cedula})
             res.json({ vendedores })
         } catch (error) {
             res.status(400).json({error})
@@ -30,8 +32,8 @@ const httpVendedores = {
     postVendedores: async (req, res) => {
         try {
             const { nombre, cedula, edad, telefono } = req.body
-            const vendedores = new Vendedor({ nombre, cedula, edad, telefono })
-            await Vendedor.save()
+            const vendedores = new ({ nombre, cedula, edad, telefono })
+            await vendedores.save()
 
             res.json({ vendedores })
         } catch (error) {
@@ -71,7 +73,6 @@ const httpVendedores = {
             const {id}=req.params
             const vendedor=await Vendedor.findByIdAndUpdate(id,{estado:1})
         } catch (error) {
-           
         }
     }
 }

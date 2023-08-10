@@ -14,7 +14,6 @@ const httpClientes = {
         try {
             const clientes = await Cliente.find({cc:cedula})
             res.json({ clientes })
-           
         } catch (error) {
             res.status(400).json({error})
         }
@@ -74,7 +73,6 @@ const httpClientes = {
             const {id}=req.params
             const cliente=await Cliente.findByIdAndUpdate(id,{estado:1})
         } catch (error) {
-           
         }
     }
 }
