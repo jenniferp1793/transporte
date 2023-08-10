@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 
 const clienteSchema = new mongoose.Schema({
-    nombre: { type: String, required: true, minlength: 7, maxlength: 10 },
-    cc: { type: String, required: true, unique: true, minlength: 7, maxlength: 10 },
-    edad: { type: Number, default: 0 },
-    telefono: { type: Number, default: 0 },
-    estado: { type: Number, default: 1 }
+    cedula: { type: Number, require:true, unique:true},
+    nombre: { type: String, minlenght: 5, require:true },
+    telefono: { type: Number, require: true},
+    createAT : {type:Date,default: Date.now },
+    estado:{type:Boolean, default:1}
 });
 
-export default mongoose.model("Cliente", clienteSchema);
+// export default cliente [{clienteSchema}]
+
+export default mongoose.model("Cliente", clienteSchema)

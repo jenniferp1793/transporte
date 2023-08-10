@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 
-const vendedorSchema= new mongoose.Schema({
-    nombre:{type:String, required:true, minlength:7, maxlength:10},
-    cc:{type:String, required:true, unique:true, minlength:7, maxlength:10},
-    estado:{type:Number, default:1}
-})
+const vendedorSchema = new mongoose.Schema({
+    cedula: { type: String, require:true, unique:true },
+    nombre: { type: String, minlenght: 5, require:true },
+    cuenta: { type: String, require:true},
+    clave: { type: String, require:true},
+    telefono: {type: String, require:true},
+    createAT : {type:Date,default: Date.now },
+    estado:{type:Boolean, default:1}
+});
 
-export default mongoose.modal("vendedor", vendedorSchema)
+
+export default mongoose.model("Vendedor", vendedorSchema)
