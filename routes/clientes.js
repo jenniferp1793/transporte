@@ -1,51 +1,52 @@
 import { Router } from "express"
-import httpClientes from "../controllers/clientes.js"
+import httpCliente from "../controllers/clientes.js";
 import { check } from "express-validator"
+import validarCampos from "../middlewares/validar.js"
+import helpersCliente from "../helpers/hp_clientes.js";
 
-const router=new Router()
 
-router.get('/hola',[
-  check("nombre", "El nombre es obligatorio").not().isEmpty(),
-  check("nombre", "Minimo 8 caracteres").isLength({min:8}),
-  check("nombrecampo").isMongoId(),
-  check("cedula, cedula duplicada"),
-  check("cedula", "La cedula es obligatoria").not().isEmpty(),
-  check("cedula", "numerica").isNumeric(),
-  check("telefono", "El telefono es obligatorio").not().isEmpty(),
-  check("telefono", "Maximo 15 caracteres").isLength({max:15})
-] ,httpClientes.getclientes  )
+const router = new Router()
 
-router.get('/:cedula', httpClientes.getClientesCedula)
+router.get('/cliente', httpCliente.getCliente);
 
-router.post('/', httpClientes.postClientes  )
+router.get('/cliente/:id', [
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+], httpCliente.getClienteId);
 
-router.delete('/:cedula',(req,res)=>{
-  const {cedula}=req.params
+router.post('/cliente/agregar', [
+    check("cedula", "Digite su cedula").not().isEmpty(),
+    check("nombre", "El nombre debe tener mas de 5 caracteres").isLength({ min: 5 }),
+    check("nombre", "Digite su nombre").not().isEmpty(),
+    check("telefono", "Digite su telefono").not().isEmpty(),
+    validarCampos
+], httpCliente.postCliente);
 
-  const index=bd.clientes.findIndex( cliente=> cliente.cc==cedula   )
-  const cliente= bd.clientes.splice(index,1)
+router.put('/cliente/:id', [
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    check("nombre", "Digite su nombre").isLength({ min: 5 }),
+    check("nombre", "Digite su nombre").not().isEmpty(),
+    check("telefono", "Digite su telefono").not().isEmpty(),
+    validarCampos
+], httpCliente.putCliente);
 
-  if( index==-1 ) res.status(400).json({error:"Cliente no existe"})
-  else res.json({cliente})
-})
+router.delete('/cliente/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+], httpCliente.deleteCliente);
+
+router.put('inactivarCliente/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpCliente.putClienteInactivar)
+router.put('activarCliente/:id',[
+    check("id", "Digite el id").not().isEmpty(),
+    check("id", "Digite el id").isMongoId(),
+    validarCampos
+],httpCliente.putClienteActivar)
 
 export default router
-
-const validarCampos = ( req, res, next ) => {
-  const errors = validationResult(req);
-  if( ! errors.isEmpty() ){
-
-      if (req.codeError){
-          return res.status(req.codeError).json({error:"Error de validación de datos"});
-      } 
-
-      return res.status(400).json({error:"Error de validación de datos"});
-  }
-  
-  next();
-}
-
-
-export {
-  validarCampos
-}
